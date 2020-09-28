@@ -1,4 +1,5 @@
 import os
+import sys
 from glob import glob
 import imageio as iio
 import dask
@@ -29,6 +30,6 @@ def load_images(folder):
 
 
 if __name__ == '__main__':
-    vol = load_images()
+    vol = load_images(sys.argv[1])
     with napari.gui_qt():
         viewer = napari.view_image(vol)
