@@ -7,27 +7,23 @@ import numpy as np
 import napari
 
 
-FILES = sorted(
-    glob('/Users/jni/Dropbox/data/rice_root_daily_growth/*/*.cb')
-)
-FILES_ARRAY = np.array(list(FILES)).reshape((21, -1))
-IMAGE0 = iio.imread(FILES_ARRAY[0, 0])
-IMAGE0_SHAPE = IMAGE0.shape
-IMAGE0_DTYPE = IMAGE0.dtype
-
-
-def load_block(block_id):
-    image = np.asarray(iio.imread(FILES_ARRAY[block_id[:2]]))
+def load_block(files_array, block_id):
+    image = np.asarray(iio.imread(files_array[block_id[:2]]))
     return image[np.newaxis, np.newaxis]
 
 
-def load_images():
-    nvols, nz = FILES_ARRAY.shape
-    ny, nx = IMAGE0_SHAPE
+def load_images(folder):
+    files = sorted(glob(os.path.join(folder, '*/*.cb')))
+    n_folders = len(set(os.path.dirname(fn) for fn in files))
+    files_array = np.array(list(files)).reshape((n_folders, -1))
+    image0 = iio.imread(files_array[0, 0])
+    nvols, nz = files_array.shape
+    ny, nx = image0.shape
     stacked = da.map_blocks(
         load_block,
+        files_array,
         chunks=((1,) * nvols, (1,) * nz, (ny,), (nx,)),
-        dtype=IMAGE0_DTYPE,
+        dtype=image0.dtype,
     )
     return stacked
 
