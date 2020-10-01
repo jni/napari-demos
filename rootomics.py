@@ -1,3 +1,12 @@
+"""Functions and script to load data from Shota Teramoto et al, 2020.
+
+https://plantmethods.biomedcentral.com/articles/10.1186/s13007-020-00612-6
+
+Data available at:
+    https://rootomics.dna.affrc.go.jp/en/results
+
+Or by request to the author, Shota Teramoto.
+"""
 import os
 import sys
 from glob import glob
@@ -14,6 +23,22 @@ def load_block(files_array, block_id):
 
 
 def load_images(folder):
+    """Load images from root (heh) folder.
+
+    The root folder must contain one or more subfolders, one per timepoint.
+    Each subfolder contains a 3D image stack, with each slice in the stack
+    present as a separate .cb (tiff) file.
+
+    Parameters
+    ----------
+    folder : str
+        The root folder containing the data.
+
+    Returns
+    -------
+    stacked : dask.array.Array
+        The 4D stacked dataset as a dask array.
+    """
     files = sorted(glob(os.path.join(folder, '*/*.cb')))
     n_folders = len(set(os.path.dirname(fn) for fn in files))
     files_array = np.array(list(files)).reshape((n_folders, -1))
