@@ -105,7 +105,7 @@ def calculate_transform(src, dst, model=AffineTransform()):
     """
     print(src)
     print(dst)
-    model.estimate(src, dst)
+    model.estimate(dst, src)  # we want the inverse
     return model.params
 
 
