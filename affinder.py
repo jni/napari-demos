@@ -1,6 +1,3 @@
-from typing import List, Tuple as Tup, Optional as Opt
-
-
 import toolz as tz
 from magicgui import magicgui
 from magicgui.widgets import Container
@@ -50,7 +47,7 @@ def start_affinder(reference: napari.layers.Image, moving: napari.layers.Image, 
         points_layers.append(new_layer)
     pts_layer0 = points_layers[0]
     pts_layer1 = points_layers[1]
-    
+
     # make a callback for points added
     callback = next_layer_callback(
         viewer=viewer,
@@ -62,8 +59,17 @@ def start_affinder(reference: napari.layers.Image, moving: napari.layers.Image, 
         )
     pts_layer0.events.data.connect(callback)
     pts_layer1.events.data.connect(callback)
-    close_affinder.layers.value = [pts_layer0, pts_layer1]
-    close_affinder.callback.value = callback
+
+    # make a button to shut things down
+    @magicgui(
+        call_button='Finish',
+    )
+    def close_affinder():
+        layers = [pts_layer0, pts_layer1]
+        for layer in layers:
+            layer.events.data.disconnect(callback)
+            layer.mode = 'pan_zoom'
+    viewer.window.add_dock_widget(close_affinder, area='right')
 
     # get the layer order started
     for layer in [moving, pts_layer1, reference, pts_layer0]:
@@ -73,18 +79,6 @@ def start_affinder(reference: napari.layers.Image, moving: napari.layers.Image, 
     pts_layer0.selected = True
     pts_layer0.mode = 'add'
 
-
-@magicgui(
-        call_button='Finish',
-        callback={'visible': False, 'label': ' '},
-        layers={'visible': False, 'label': ' '}
-        )
-def close_affinder(layers, callback=None):
-    for layer in layers:
-        layer.events.data.disconnect(callback)
-
-
-# affinder = Container(widgets=[start_affinder, close_affinder], layout='vertical')
 
 def calculate_transform(src, dst, model=AffineTransform()):
     """Calculate transformation matrix from matched coordinate pairs.
@@ -108,5 +102,4 @@ def calculate_transform(src, dst, model=AffineTransform()):
 
 viewer = napari.Viewer()
 viewer.window.add_dock_widget(start_affinder, area='right')
-viewer.window.add_dock_widget(close_affinder, area='right')
 napari.run()
