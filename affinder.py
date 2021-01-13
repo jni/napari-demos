@@ -27,9 +27,8 @@ def next_layer_callback(value, *args, viewer, event, image_layer0, pts_layer0, i
         if n1 == n0:  # we just added enough points, estimate transform, go back to layer0
             if n0 > 2:
                 mat = calculate_transform(pts0, pts1)
-                print(mat)
-                image_layer1.affine = mat
-                print(image_layer1.affine.affine_matrix)
+                image_layer1.affine = mat.params
+                pts_layer1.affine = mat.params
             pts_layer0.selected = True
             pts_layer1.selected = False
             pts_layer0.mode = 'add'
@@ -100,13 +99,11 @@ def calculate_transform(src, dst, model=AffineTransform()):
         By default, model=AffineTransform()
     Returns
     -------
-    ndarray
-        Transformation matrix.
+    transform
+        scikit-image Transformation object
     """
-    print(src)
-    print(dst)
     model.estimate(dst, src)  # we want the inverse
-    return model.params
+    return model
 
 
 viewer = napari.Viewer()
