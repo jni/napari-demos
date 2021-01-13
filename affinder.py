@@ -23,11 +23,13 @@ def next_layer_callback(value, *args, viewer, event, image_layer0, pts_layer0, i
             pts_layer1.mode == 'add'
             viewer.layers.move(viewer.layers.index(image_layer1), -1)
             viewer.layers.move(viewer.layers.index(pts_layer1), -1)
-            if n1 > 3:  # we have enough points to estimate a transform
-                mat = calculate_transform(pts0[:n1], pts1[:n1])
-                image_layer1.affine = mat
     elif pts_layer1.selected:
-        if n1 == n0:  # we just added enough points, go back to layer0
+        if n1 == n0:  # we just added enough points, estimate transform, go back to layer0
+            if n0 > 2:
+                mat = calculate_transform(pts0, pts1)
+                print(mat)
+                image_layer1.affine = mat
+                print(image_layer1.affine.affine_matrix)
             pts_layer0.selected = True
             pts_layer1.selected = False
             pts_layer0.mode = 'add'
@@ -41,12 +43,8 @@ def start_affinder(reference: napari.layers.Image, moving: napari.layers.Image, 
     points_layers = []
     # Use C0 and C1 from matplotlib color cycle
     for layer, color in [(reference, (0.122, 0.467, 0.706, 1.0)), (moving, (1.0, 0.498, 0.055, 1.0))]:
-        data = (layer.data
-                if not isinstance(layer.data, list)
-                else layer.data[0]
-                )
         new_layer = napari.layers.Points(
-                ndim=data.ndim, name=layer.name + '_pts'
+                ndim=layer.ndim, name=layer.name + '_pts'
                 )
         new_layer.current_face_color = color
         viewer.layers.append(new_layer)
@@ -105,6 +103,8 @@ def calculate_transform(src, dst, model=AffineTransform()):
     ndarray
         Transformation matrix.
     """
+    print(src)
+    print(dst)
     model.estimate(src, dst)
     return model.params
 
