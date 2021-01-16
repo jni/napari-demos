@@ -71,11 +71,12 @@ def start_affinder(
     @magicgui(
         call_button='Finish',
     )
-    def close_affinder():
+    def close_affinder(viewer: napari.Viewer):
         layers = [pts_layer0, pts_layer1]
         for layer in layers:
             layer.events.data.disconnect(callback)
             layer.mode = 'pan_zoom'
+        viewer.window.remove_dock_widget(close_affinder.native)
     viewer.window.add_dock_widget(close_affinder, area='right')
 
     # get the layer order started
