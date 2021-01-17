@@ -15,7 +15,7 @@ class AffineTransformChoices(Enum):
     similarity=SimilarityTransform
 
 @tz.curry
-def next_layer_callback(value, *args, viewer, image_layer0, pts_layer0, image_layer1, pts_layer1):
+def next_layer_callback(value, *args, viewer, image_layer0, pts_layer0, image_layer1, pts_layer1, model):
     pts0, pts1 = pts_layer0.data, pts_layer1.data
     n0, n1 = len(pts0), len(pts1)
     if pts_layer0.selected:
@@ -31,7 +31,7 @@ def next_layer_callback(value, *args, viewer, image_layer0, pts_layer0, image_la
         if n1 == n0:
             # we just added enough points, estimate transform, go back to layer0
             if n0 > 2:
-                mat = calculate_transform(pts0, pts1)
+                mat = calculate_transform(pts0, pts1, model_class=model)
                 image_layer1.affine = mat.params
                 pts_layer1.affine = mat.params
             pts_layer0.selected = True
@@ -75,6 +75,7 @@ def start_affinder(
         pts_layer0=pts_layer0,
         image_layer1=moving,
         pts_layer1=pts_layer1,
+        model=model.value,
         )
     pts_layer0.events.data.connect(callback)
     pts_layer1.events.data.connect(callback)
