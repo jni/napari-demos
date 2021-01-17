@@ -1,8 +1,18 @@
+from enum import Enum
 import toolz as tz
 from magicgui import magicgui
 import napari
-from skimage.transform import AffineTransform
+from skimage.transform import (
+    AffineTransform,
+    EuclideanTransform,
+    SimilarityTransform,
+)
 
+
+class AffineTransformChoices(Enum):
+    affine=AffineTransform
+    Euclidean=EuclideanTransform
+    similarity=SimilarityTransform
 
 @tz.curry
 def next_layer_callback(value, *args, viewer, image_layer0, pts_layer0, image_layer1, pts_layer1):
@@ -39,7 +49,9 @@ def next_layer_callback(value, *args, viewer, image_layer0, pts_layer0, image_la
 def start_affinder(
         reference: napari.layers.Image,
         moving: napari.layers.Image,
-        viewer : napari.Viewer):
+        model: AffineTransformChoices,
+        viewer : napari.Viewer,
+):
     # make a points layer for each image
     points_layers = []
     # Use C0 and C1 from matplotlib color cycle
@@ -88,7 +100,7 @@ def start_affinder(
     pts_layer0.mode = 'add'
 
 
-def calculate_transform(src, dst, model=AffineTransform()):
+def calculate_transform(src, dst, model_class=AffineTransform):
     """Calculate transformation matrix from matched coordinate pairs.
 
     Parameters
@@ -97,13 +109,15 @@ def calculate_transform(src, dst, model=AffineTransform()):
         Matched row, column coordinates from source image.
     dst : ndarray
         Matched row, column coordinates from destination image.
-    model : scikit-image transformation class, optional.
-        By default, model=AffineTransform()
+    model_class : scikit-image transformation class, optional.
+        By default, model=AffineTransform().
+
     Returns
     -------
     transform
         scikit-image Transformation object
     """
+    model = model_class()
     model.estimate(dst, src)  # we want the inverse
     return model
 
