@@ -80,9 +80,7 @@ def start_affinder(
     pts_layer1.events.data.connect(callback)
 
     # make a button to shut things down
-    @magicgui(
-        call_button='Finish',
-    )
+    @magicgui(call_button='Finish')
     def close_affinder(viewer: napari.Viewer):
         layers = [pts_layer0, pts_layer1]
         for layer in layers:
