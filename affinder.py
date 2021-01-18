@@ -121,6 +121,11 @@ def calculate_transform(src, dst, model_class=AffineTransform):
     return model
 
 
-viewer = napari.Viewer()
-viewer.window.add_dock_widget(start_affinder, area='right')
-napari.run()
+def main():
+    viewer = napari.Viewer()
+    viewer.window.add_dock_widget(start_affinder, area='right')
+    napari.run()
+
+
+if __name__ == '__main__':
+    main()
