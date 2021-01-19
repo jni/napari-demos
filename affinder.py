@@ -26,7 +26,7 @@ def next_layer_callback(value, *args, viewer, image_layer0, pts_layer0, image_la
             pts_layer1.selected = True
             viewer.layers.move(viewer.layers.index(image_layer1), -1)
             viewer.layers.move(viewer.layers.index(pts_layer1), -1)
-            pts_layer1.mode == 'add'
+            pts_layer1.mode = 'add'
     elif pts_layer1.selected:
         if n1 == n0:
             # we just added enough points, estimate transform, go back to layer0
