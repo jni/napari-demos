@@ -18,7 +18,7 @@ import napari
 
 
 def load_block(files_array, block_id):
-    image = np.asarray(iio.imread(files_array[block_id[:2]]))
+    image = np.asarray(iio.v3.imread(files_array[block_id[:2]]))
     return image[np.newaxis, np.newaxis]
 
 
@@ -42,7 +42,7 @@ def load_images(folder):
     files = sorted(glob(os.path.join(folder, '*/*.cb')))
     n_folders = len(set(os.path.dirname(fn) for fn in files))
     files_array = np.array(list(files)).reshape((n_folders, -1))
-    image0 = iio.imread(files_array[0, 0])
+    image0 = iio.v3.imread(files_array[0, 0])
     nvols, nz = files_array.shape
     ny, nx = image0.shape
     stacked = da.map_blocks(
@@ -55,6 +55,16 @@ def load_images(folder):
 
 
 if __name__ == '__main__':
-    vol = load_images(sys.argv[1])
-    with napari.gui_qt():
-        viewer = napari.view_image(vol)
+    if len(sys.argv) > 1:
+        fn = sys.argv[1]
+    else:
+        fn = '/Users/jni/Dropbox/data/rice_root_daily_growth/'
+    vol = load_images(fn)
+    vol_cropped = vol[:, 10:350, 300:725, 300:725]
+    viewer, layer = napari.imshow(
+            vol_cropped,
+            contrast_limits=[34_300, 36_900],
+            rendering='minip',
+            ndisplay=3,
+            )
+    napari.run()
