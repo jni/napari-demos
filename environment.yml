@@ -1,0 +1,36 @@
+name: napari-demos
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - jupyterlab
+  - jupytext
+  - notebook
+  - matplotlib
+  - scikit-image
+  - jupyter-book
+  - pooch
+  - pyqt=5.*
+  - scikit-learn
+  - ipywidgets
+  - seaborn
+  - cookiecutter
+  - cellpose
+  - zarr
+  - torchvision
+  - napari-animation
+  - napari=0.5.4
+  - napari-convpaint
+  - napari-pdf-reader
+  - napari-ome-zarr
+  - zarpaint
+  - affinder
+  - napari-skimage
+  - napari-threedee
+  - pip:
+    - mrcfile
+    - starfile
+    - python-rtmidi
+    - napari-segment-everything
+    - git+https://github.com/napari/midi-app-controller.git
