@@ -1,11 +1,14 @@
+import sys
 import napari
 import dask.array as da
 import numpy as np
 import h5py
 
-f = h5py.File(
-        '/Users/jni/Dropbox/data/CP-Ti-abnormal-grains-spec-1-site-5.h5oina'
-        )
+# modify fn for your local storage or use sys.argv
+fn = '/Users/jni/Dropbox/data/CP-Ti-abnormal-grains-spec-1-site-5.h5oina'
+path = sys.argv[1] if len(sys.argv) > 1 else fn
+
+f = h5py.File(path)
 
 ebsd = f['1/EBSD']
 pat = ebsd['Data/Processed Patterns']  # array, (npatterns, dy, dx)
