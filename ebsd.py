@@ -3,9 +3,12 @@ import napari
 import dask.array as da
 import numpy as np
 import h5py
+from pathlib import Path
 
 # modify fn for your local storage or use sys.argv
-fn = '/Users/jni/Dropbox/data/CP-Ti-abnormal-grains-spec-1-site-5.h5oina'
+fn = Path(
+        '~/Dropbox/data/kikuchi/CP-Ti-abnormal-grains-spec-1-site-5.h5oina'
+        ).expanduser()
 path = sys.argv[1] if len(sys.argv) > 1 else fn
 
 f = h5py.File(path)
